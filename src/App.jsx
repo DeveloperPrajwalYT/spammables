@@ -103,25 +103,24 @@ const ThemeCtx = createContext(THEMES.cyberpunk);
 const useTheme = () => useContext(ThemeCtx);
 
 /* ============================================================================
-   PERSISTENCE (window.storage — localStorage is not available in this
-   environment, so all config is saved through the artifact storage API)
+   PERSISTENCE (Standard Browser LocalStorage)
 ============================================================================ */
 
 const STORAGE_KEY = "yt-dash:config";
 
 async function loadConfig() {
   try {
-    const res = await window.storage?.get(STORAGE_KEY, false);
-    if (res?.value) return JSON.parse(res.value);
+    const res = localStorage.getItem(STORAGE_KEY);
+    if (res) return JSON.parse(res);
   } catch (e) {
-    /* first run — nothing saved yet */
+    console.error("Failed to load config", e);
   }
   return null;
 }
 
 async function saveConfig(cfg) {
   try {
-    await window.storage?.set(STORAGE_KEY, JSON.stringify(cfg), false);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
   } catch (e) {
     console.error("Failed to persist config", e);
   }
